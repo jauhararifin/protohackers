@@ -21,6 +21,30 @@ fn strlen(p: [*]u8): usize {
   return i;
 }
 
+fn print_bool(val: bool) {
+  if val {
+    print_str("true");
+  } else {
+    print_str("false");
+  }
+}
+
+fn print_char(val: u8) {
+  let p = mem::alloc_array::<u8>(1);
+  p[0].* = val;
+
+  let iovec = mem::alloc::<wasi::IoVec>();
+  iovec.* = wasi::IoVec{
+    len: 1,
+    p:   p,
+  };
+
+  wasi::fd_write(1, iovec, 1, 0 as *i32);
+
+  mem::dealloc_array::<u8>(p);
+  mem::dealloc::<wasi::IoVec>(iovec);
+}
+
 fn print_i8(val: i8) { print_i64(val as i64); }
 fn print_i16(val: i16) { print_i64(val as i64); }
 fn print_i32(val: i32) { print_i64(val as i64); }
